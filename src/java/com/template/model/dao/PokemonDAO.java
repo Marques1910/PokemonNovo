@@ -8,9 +8,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList; // <--- Faltava este import para o ArrayList funcionar
+import java.util.ArrayList;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
+import static com.template.util.DialogUtil.showError;
 
 public class PokemonDAO {
+    private static final Logger logger = Logger.getLogger(PokemonDAO.class.getName());
 
     public void cadastrarPokemon(PokemonDTO pokemon) {
         String sql = "INSERT INTO pokemon (nome, tipo, numero, geracao) VALUES (?, ?, ?, ?)";
@@ -27,7 +32,8 @@ public class PokemonDAO {
             System.out.println("-> Pokemon " + pokemon.getNome() + " cadastrado com sucesso!");
 
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            showError("Erro ao cadastrar Pokemon!");
         }
     }
 
@@ -51,7 +57,7 @@ public class PokemonDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Erro ao listar: " + e.getMessage());
+            showError("Erro ao listar pokemon!");
         }
 
         return lista;
@@ -76,7 +82,7 @@ public class PokemonDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Erro ao alterar: " + e.getMessage());
+            showError("Erro ao alterar pokemon!");
         }
     }
 
@@ -96,7 +102,7 @@ public class PokemonDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println(e.getMessage());
+            showError("Erro ao excluir pokemon!");
         }
     }
 }

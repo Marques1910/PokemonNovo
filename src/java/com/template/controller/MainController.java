@@ -45,7 +45,8 @@ public class MainController
         String tipo = txtTipo.getText();
 
         int numero = Integer.parseInt(txtNum.getText());
-        int geracao = Integer.getInteger(txtGeracao.getText(), 1);
+        int geracao = Integer.getInteger(txtGeracao.getText());
+
         PokemonDTO novoPokemon = new PokemonDTO();
         novoPokemon.setNome(nome);
         novoPokemon.setTipo(tipo);
