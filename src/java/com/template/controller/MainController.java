@@ -9,6 +9,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import service.PokemonService;
+
 import java.util.ArrayList;
 
 public class MainController
@@ -17,26 +19,18 @@ public class MainController
     @FXML private Button btn_editar;
     @FXML private Button btn_excluir;
     @FXML private Button btn_pesquisar;
-    @FXML private TextField txtGeracao;
+    @FXML private TextField txtNome;
     @FXML private TextField txtTipo;
     @FXML private TextField txtNum;
-    @FXML private TextField txtNome;
-
-
+    @FXML private TextField txtGeracao;
     @FXML private TableView<PokemonDTO> tblPokemon;
+
+    private PokemonService pokemonService = new PokemonService();
+
     @FXML private TableColumn<PokemonDTO, Integer> colGeracao;
     @FXML private TableColumn<PokemonDTO, String> colTipo;
     @FXML private TableColumn<PokemonDTO, Integer> colNum;
     @FXML private TableColumn<PokemonDTO, String> colNome;
-
-    @FXML
-    private void carregarPokemon()
-    {
-        PokemonDAO objPokemonDAO = new PokemonDAO();
-
-        ArrayList<PokemonDTO> listaPokemon = objPokemonDAO.listarPokemons();
-        tblPokemon.setItems(FXCollections.observableArrayList(listaPokemon));
-    }
 
     @FXML
     private void btnAdicionarClick() {
@@ -56,12 +50,9 @@ public class MainController
         PokemonDAO objPokemonDAO = new PokemonDAO();
         objPokemonDAO.cadastrarPokemon(novoPokemon);
 
-        txtNome.clear();
-        txtTipo.clear();
-        txtNum.clear();
-        txtGeracao.clear();
 
-        carregarPokemon();
+        pokemonService.limparCampos(txtNome, txtTipo, txtNum, txtGeracao);
+        pokemonService.carregarCampos(tblPokemon, txtNome, txtTipo, txtNum, txtGeracao);
     }
 
     @FXML
@@ -74,16 +65,14 @@ public class MainController
 
                 pokemonSelecionado.setNome(txtNome.getText());
                 pokemonSelecionado.setTipo(txtTipo.getText());
+                pokemonSelecionado.setTipo(txtNum.getText());
                 pokemonSelecionado.setGeracao(Integer.parseInt(txtGeracao.getText()));
-
-
 
                 PokemonDAO objPokemonDAO = new PokemonDAO();
                 objPokemonDAO.alterarPokemon(pokemonSelecionado);
 
-
-                limparCampos();
-                carregarPokemon();
+                pokemonService.limparCampos(txtNome, txtTipo, txtNum, txtGeracao);
+                pokemonService.carregarPokemon(tblPokemon);
                 System.out.println("Pokémon editado com sucesso!");
 
             } catch (NumberFormatException e) {
@@ -104,45 +93,23 @@ public class MainController
             PokemonDAO objPokemonDAO = new PokemonDAO();
             objPokemonDAO.excluirPokemon(pokemonSelecionado.getNumero());
 
-            limparCampos();
-            carregarPokemon();
+            pokemonService.limparCampos(txtNome, txtTipo, txtNum, txtGeracao);
+            pokemonService.carregarPokemon(tblPokemon);
         } else {
             System.out.println("Por favor, selecione um Pokémon na tabela para excluir.");
         }
     }
 
 
-
-    private void limparCampos() {
-        txtNome.clear();
-        txtTipo.clear();
-        txtNum.clear();
-        txtGeracao.clear();
-    }
-
     @FXML
-    private void initialize()
-    {
+    private void initialize() {
         colGeracao.setCellValueFactory(new PropertyValueFactory<>("geracao"));
         colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
         colNum.setCellValueFactory(new PropertyValueFactory<>("numero"));
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
 
 
-        carregarPokemon();
+        pokemonService.carregarPokemon(tblPokemon);
     }
 
-    @FXML
-    private void carregarCampos()
-    {
-
-        PokemonDTO objPokemonDTO = tblPokemon.getSelectionModel().getSelectedItem();
-
-        if (objPokemonDTO != null) {
-            txtGeracao.setText(String.valueOf(objPokemonDTO.getGeracao()));
-            txtTipo.setText(objPokemonDTO.getTipo());
-            txtNum.setText(String.valueOf(objPokemonDTO.getNumero()));
-            txtNome.setText(objPokemonDTO.getNome());
-        }
-    }
 }
