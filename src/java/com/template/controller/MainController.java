@@ -9,6 +9,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import service.PokemonService;
 
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class MainController
 
 
         pokemonService.limparCampos(txtNome, txtTipo, txtNum, txtGeracao);
-        pokemonService.carregarCampos(tblPokemon, txtNome, txtTipo, txtNum, txtGeracao);
+        carregarCampos(tblPokemon, txtNome, txtTipo, txtNum, txtGeracao);
     }
 
     @FXML
@@ -75,7 +76,7 @@ public class MainController
                 pokemonService.carregarPokemon(tblPokemon);
                 System.out.println("Pokémon editado com sucesso!");
 
-            } catch (NumberFormatException e) {
+             } catch (NumberFormatException e) {
                 System.err.println("Erro: Verifique se os campos numéricos estão corretos.");
             }
         } else {
@@ -112,4 +113,15 @@ public class MainController
         pokemonService.carregarPokemon(tblPokemon);
     }
 
+    @FXML
+    public void carregarCampos(TableView<PokemonDTO> tblPokemon, TextField txtNome, TextField txtTipo, TextField txtNum, TextField txtGeracao) {
+        PokemonDTO objPokemonDTO = tblPokemon.getSelectionModel().getSelectedItem();
+
+        if (objPokemonDTO != null) {
+            txtGeracao.setText(String.valueOf(objPokemonDTO.getGeracao()));
+            txtTipo.setText(objPokemonDTO.getTipo());
+            txtNum.setText(String.valueOf(objPokemonDTO.getNumero()));
+            txtNome.setText(objPokemonDTO.getNome());
+        }
+    }
 }

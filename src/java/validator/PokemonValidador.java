@@ -12,4 +12,6 @@ public class PokemonValidador {
         }
         return true;
     }
+
+
 }

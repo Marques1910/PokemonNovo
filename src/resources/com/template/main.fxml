@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
-
 <?import javafx.scene.control.*?>
-
 <?import javafx.scene.layout.*?>
-
-
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.template.controller.MainController">
 
@@ -16,7 +11,7 @@
 
         <Label layoutX="70.0" layoutY="116.0" text="Nome:" />
 
-        <TableView fx:id="tblPokemon" layoutX="54.0" layoutY="173.0" onMouseClicked="#carregarCampos" prefHeight="200.0" prefWidth="297.0">
+        <TableView fx:id="tblPokemon" layoutX="54.0" layoutY="173.0" prefHeight="200.0" prefWidth="297.0">
 
             <columns>
 
@@ -34,7 +29,7 @@
 
         <TextField fx:id="txtNome" layoutX="128.0" layoutY="112.0" />
 
-        <Button fx:id="btn_excluir" layoutX="444.0" layoutY="248.0" mnemonicParsing="false" text="Excluir" />
+        <Button fx:id="btn_excluir" layoutX="444.0" layoutY="248.0" mnemonicParsing="false" onAction="#btnExcluirClick" text="Excluir" />
 
         <Button fx:id="btn_editar" layoutX="444.0" layoutY="210.0" mnemonicParsing="false" onAction="#btnEditarClick" text="Editar" />
 

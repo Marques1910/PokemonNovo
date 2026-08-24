@@ -21,17 +21,7 @@ public class PokemonService{
         txtGeracao.clear();
     }
 
-    public void carregarCampos(TableView<PokemonDTO> tblPokemon, TextField txtNome, TextField txtTipo, TextField txtNum, TextField txtGeracao)
-    {
-        PokemonDTO objPokemonDTO = tblPokemon.getSelectionModel().getSelectedItem();
 
-        if (objPokemonDTO != null) {
-            txtGeracao.setText(String.valueOf(objPokemonDTO.getGeracao()));
-            txtTipo.setText(objPokemonDTO.getTipo());
-            txtNum.setText(String.valueOf(objPokemonDTO.getNumero()));
-            txtNome.setText(objPokemonDTO.getNome());
-        }
-    }
 
     public void carregarPokemon(TableView<PokemonDTO> tblPokemon)
     {
