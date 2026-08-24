@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/resources" type="java-resource" />
     </content>
     <orderEntry type="jdk" jdkName="25" jdkType="JavaSDK" />
+    <orderEntry type="library" name="postgresql-42.7.10" level="project" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="lib" level="application" />
   </component>
