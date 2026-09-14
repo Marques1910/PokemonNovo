@@ -4,13 +4,16 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import validator.IPokemonValidador;
+import validator.PokemonValidador;
 
 public class Main extends Application
 {
     @Override
     public void start(Stage stage) throws Exception
     {
-        // Adicionada a barra "/" para buscar na raiz do resources
+        IPokemonValidador pokemonValidador = new PokemonValidador();
+
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("/com/template/main.fxml"));
         Scene scene = new Scene(loader.load(), 600, 400);
 

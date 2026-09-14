@@ -11,11 +11,19 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import service.PokemonService;
+import validator.IPokemonValidador;
+import validator.PokemonValidador; // Import do validador adicionado
 
 import java.util.ArrayList;
 
 public class MainController
 {
+    private final IPokemonValidador PokemonValidador;
+
+    public MainController(IPokemonValidador PokemonValidador){
+        this.PokemonValidador = PokemonValidador;
+    }
+
     @FXML private Button btn_adicionar;
     @FXML private Button btn_editar;
     @FXML private Button btn_excluir;
@@ -35,12 +43,21 @@ public class MainController
 
     @FXML
     private void btnAdicionarClick() {
-
+        if (!PokemonValidador.validarPokemon(txtNome.getText(), txtTipo.getText(), txtNum.getText(), txtGeracao.getText())) {
+            return;
+        }
         String nome = txtNome.getText();
         String tipo = txtTipo.getText();
+        String numeroStr = txtNum.getText();
+        String geracaoStr = txtGeracao.getText();
 
-        int numero = Integer.parseInt(txtNum.getText());
-        int geracao = Integer.getInteger(txtGeracao.getText());
+        PokemonValidador validador = new PokemonValidador();
+        if (!validador.validarPokemon(nome, tipo, numeroStr, geracaoStr)){
+            return;
+        }
+
+        int numero = Integer.parseInt(numeroStr);
+        int geracao = Integer.parseInt(geracaoStr);
 
         PokemonDTO novoPokemon = new PokemonDTO();
         novoPokemon.setNome(nome);
@@ -50,7 +67,6 @@ public class MainController
 
         PokemonDAO objPokemonDAO = new PokemonDAO();
         objPokemonDAO.cadastrarPokemon(novoPokemon);
-
 
         pokemonService.limparCampos(txtNome, txtTipo, txtNum, txtGeracao);
         carregarCampos(tblPokemon, txtNome, txtTipo, txtNum, txtGeracao);
@@ -62,12 +78,22 @@ public class MainController
         PokemonDTO pokemonSelecionado = tblPokemon.getSelectionModel().getSelectedItem();
 
         if (pokemonSelecionado != null) {
-            try {
+            String nome = txtNome.getText();
+            String tipo = txtTipo.getText();
+            String numeroStr = txtNum.getText();
+            String geracaoStr = txtGeracao.getText();
 
-                pokemonSelecionado.setNome(txtNome.getText());
-                pokemonSelecionado.setTipo(txtTipo.getText());
-                pokemonSelecionado.setTipo(txtNum.getText());
-                pokemonSelecionado.setGeracao(Integer.parseInt(txtGeracao.getText()));
+            // Aplica a validação também na edição
+            PokemonValidador validador = new PokemonValidador();
+            if (!validador.validarPokemon(txtNome.getText(), txtTipo.getText(), txtNum.getText(), txtGeracao.getText())){
+                return; // Se retornar falso, interrompe o processo aqui
+            }
+
+            try {
+                pokemonSelecionado.setNome(nome);
+                pokemonSelecionado.setTipo(tipo);
+                pokemonSelecionado.setNumero(Integer.parseInt(numeroStr)); // Bug corrigido
+                pokemonSelecionado.setGeracao(Integer.parseInt(geracaoStr));
 
                 PokemonDAO objPokemonDAO = new PokemonDAO();
                 objPokemonDAO.alterarPokemon(pokemonSelecionado);
@@ -76,7 +102,7 @@ public class MainController
                 pokemonService.carregarPokemon(tblPokemon);
                 System.out.println("Pokémon editado com sucesso!");
 
-             } catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 System.err.println("Erro: Verifique se os campos numéricos estão corretos.");
             }
         } else {
