@@ -2,19 +2,31 @@ package com.template.controller;
 
 import com.template.model.dto.PokemonDTO;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+
 import javafx.fxml.FXML;
 
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import service.IPokemonService;
 import validator.IPokemonValidador;
 
-import static com.template.util.DialogUtil.showError;
+import java.util.Locale;
+
+import static com.template.util.DialogUtil.showConfirmation;
 
 public class MainController {
 
@@ -22,26 +34,50 @@ public class MainController {
 
     private final IPokemonValidador pokemonValidador;
 
-    public MainController(
-            IPokemonService pokemonService,
-            IPokemonValidador pokemonValidador
-    ) {
+    private final ObservableList<PokemonDTO> listaPokemon =
+            FXCollections.observableArrayList();
 
-        this.pokemonService = pokemonService;
-        this.pokemonValidador = pokemonValidador;
-    }
+    private final FilteredList<PokemonDTO> listaFiltrada =
+            new FilteredList<>(
+                    listaPokemon,
+                    pokemon -> true
+            );
 
     @FXML
     private TextField txtNome;
 
     @FXML
-    private TextField txtTipo;
-
-    @FXML
     private TextField txtNum;
 
     @FXML
-    private TextField txtGeracao;
+    private TextField txtPesquisar;
+
+    @FXML
+    private ComboBox<String> cbTipo;
+
+    @FXML
+    private Spinner<Integer> spGeracao;
+
+    @FXML
+    private Button btnAdicionar;
+
+    @FXML
+    private Button btnEditar;
+
+    @FXML
+    private Button btnExcluir;
+
+    @FXML
+    private Button btnLimpar;
+
+    @FXML
+    private Label lblMensagem;
+
+    @FXML
+    private Label lblContador;
+
+    @FXML
+    private Label lblModo;
 
     @FXML
     private TableView<PokemonDTO> tblPokemon;
@@ -58,8 +94,37 @@ public class MainController {
     @FXML
     private TableColumn<PokemonDTO, String> colNome;
 
+    public MainController(
+            IPokemonService pokemonService,
+            IPokemonValidador pokemonValidador
+    ) {
+
+        this.pokemonService = pokemonService;
+        this.pokemonValidador = pokemonValidador;
+    }
+
     @FXML
     private void initialize() {
+
+        configurarTabela();
+        configurarTipos();
+        configurarGeracao();
+        configurarCampoNumero();
+        configurarPesquisa();
+        configurarSelecao();
+
+        tblPokemon.setItems(listaFiltrada);
+
+        configurarModoCadastro();
+
+        carregarTabela();
+
+        Platform.runLater(
+                txtNome::requestFocus
+        );
+    }
+
+    private void configurarTabela() {
 
         colGeracao.setCellValueFactory(
                 new PropertyValueFactory<>("geracao")
@@ -76,46 +141,154 @@ public class MainController {
         colNome.setCellValueFactory(
                 new PropertyValueFactory<>("nome")
         );
+    }
+
+    private void configurarTipos() {
+
+        cbTipo.setItems(
+                FXCollections.observableArrayList(
+                        "Normal",
+                        "Fogo",
+                        "Água",
+                        "Elétrico",
+                        "Grama",
+                        "Gelo",
+                        "Lutador",
+                        "Veneno",
+                        "Terra",
+                        "Voador",
+                        "Psíquico",
+                        "Inseto",
+                        "Pedra",
+                        "Fantasma",
+                        "Dragão",
+                        "Sombrio",
+                        "Aço",
+                        "Fada",
+                        "Grama/Veneno",
+                        "Fogo/Voador",
+                        "Água/Voador"
+                )
+        );
 
         /*
-         * Quando o usuário seleciona um Pokémon,
-         * os campos são preenchidos.
+         * Permite escolher um tipo da lista,
+         * mas também permite combinações
+         * como Água/Terra.
          */
+        cbTipo.setEditable(true);
+    }
+
+    private void configurarGeracao() {
+
+        spGeracao.setValueFactory(
+                new SpinnerValueFactory
+                        .IntegerSpinnerValueFactory(
+                        1,
+                        9,
+                        1
+                )
+        );
+    }
+
+    private void configurarCampoNumero() {
+
+        txtNum.setTextFormatter(
+                new TextFormatter<String>(
+                        change -> {
+
+                            String novoTexto =
+                                    change.getControlNewText();
+
+                            if (novoTexto.matches("\\d{0,4}")) {
+                                return change;
+                            }
+
+                            return null;
+                        }
+                )
+        );
+    }
+
+    private void configurarPesquisa() {
+
+        txtPesquisar
+                .textProperty()
+                .addListener(
+                        (
+                                observable,
+                                textoAnterior,
+                                textoAtual
+                        ) -> aplicarFiltro(textoAtual)
+                );
+    }
+
+    private void configurarSelecao() {
+
         tblPokemon
                 .getSelectionModel()
                 .selectedItemProperty()
                 .addListener(
-                        (observable, anterior, selecionado) -> {
+                        (
+                                observable,
+                                anterior,
+                                selecionado
+                        ) -> {
 
                             if (selecionado != null) {
+
                                 carregarCampos(selecionado);
+
+                                configurarModoEdicao(
+                                        selecionado
+                                );
+
+                            } else {
+
+                                configurarModoCadastro();
                             }
                         }
                 );
-
-        carregarTabela();
     }
-
 
     @FXML
     private void btnAdicionarClick() {
 
         if (!validarCampos()) {
+
+            mostrarErro(
+                    "Revise os dados informados."
+            );
+
             return;
         }
 
-        PokemonDTO pokemon =
-                criarPokemonDosCampos();
+        try {
 
-        pokemonService.cadastrarPokemon(
-                pokemon
-        );
+            PokemonDTO pokemon =
+                    criarPokemonDosCampos();
 
-        limparCampos();
+            pokemonService.cadastrarPokemon(
+                    pokemon
+            );
 
-        carregarTabela();
+            carregarTabela();
+            limparCampos();
+
+            mostrarSucesso(
+                    "Pokémon cadastrado com sucesso!"
+            );
+
+        } catch (RuntimeException e) {
+
+            mostrarErro(
+                    mensagemDaExcecao(
+                            e,
+                            "Não foi possível cadastrar o Pokémon."
+                    )
+            );
+        }
     }
-
 
     @FXML
     private void btnEditarClick() {
@@ -127,38 +300,64 @@ public class MainController {
 
         if (pokemonSelecionado == null) {
 
-            showError(
-                    "Selecione um Pokémon na tabela para editar."
+            mostrarErro(
+                    "Selecione um Pokémon para editar."
             );
 
             return;
         }
 
         if (!validarCampos()) {
+
+            mostrarErro(
+                    "Revise os dados informados."
+            );
+
             return;
         }
 
-        /*
-         * Precisamos guardar o número antigo,
-         * pois o usuário também pode alterar
-         * o número do Pokémon.
-         */
-        int numeroOriginal =
-                pokemonSelecionado.getNumero();
+        boolean confirmou =
+                showConfirmation(
+                        "Confirmar atualização",
+                        "Deseja realmente atualizar "
+                                + pokemonSelecionado.getNome()
+                                + "?"
+                );
 
-        PokemonDTO pokemonEditado =
-                criarPokemonDosCampos();
+        if (!confirmou) {
+            return;
+        }
 
-        pokemonService.alterarPokemon(
-                pokemonEditado,
-                numeroOriginal
-        );
+        try {
 
-        limparCampos();
+            int numeroOriginal =
+                    pokemonSelecionado.getNumero();
 
-        carregarTabela();
+            PokemonDTO pokemonEditado =
+                    criarPokemonDosCampos();
+
+            pokemonService.alterarPokemon(
+                    pokemonEditado,
+                    numeroOriginal
+            );
+
+            carregarTabela();
+            limparCampos();
+
+            mostrarSucesso(
+                    "Pokémon atualizado com sucesso!"
+            );
+
+        } catch (RuntimeException e) {
+
+            mostrarErro(
+                    mensagemDaExcecao(
+                            e,
+                            "Não foi possível atualizar o Pokémon."
+                    )
+            );
+        }
     }
-
 
     @FXML
     private void btnExcluirClick() {
@@ -170,33 +369,70 @@ public class MainController {
 
         if (pokemonSelecionado == null) {
 
-            showError(
-                    "Selecione um Pokémon na tabela para excluir."
+            mostrarErro(
+                    "Selecione um Pokémon para excluir."
             );
 
             return;
         }
 
-        pokemonService.excluirPokemon(
-                pokemonSelecionado.getNumero()
-        );
+        boolean confirmou =
+                showConfirmation(
+                        "Confirmar exclusão",
+                        "Deseja realmente excluir "
+                                + pokemonSelecionado.getNome()
+                                + "?"
+                );
+
+        if (!confirmou) {
+            return;
+        }
+
+        try {
+
+            pokemonService.excluirPokemon(
+                    pokemonSelecionado.getNumero()
+            );
+
+            carregarTabela();
+            limparCampos();
+
+            mostrarSucesso(
+                    "Pokémon excluído com sucesso!"
+            );
+
+        } catch (RuntimeException e) {
+
+            mostrarErro(
+                    mensagemDaExcecao(
+                            e,
+                            "Não foi possível excluir o Pokémon."
+                    )
+            );
+        }
+    }
+
+    @FXML
+    private void btnLimparClick() {
 
         limparCampos();
 
-        carregarTabela();
+        mostrarInformacao(
+                "Campos limpos. Pronto para um novo cadastro."
+        );
     }
-
 
     private boolean validarCampos() {
 
         return pokemonValidador.validarPokemon(
                 txtNome.getText(),
-                txtTipo.getText(),
+                obterTipo(),
                 txtNum.getText(),
-                txtGeracao.getText()
+                String.valueOf(
+                        spGeracao.getValue()
+                )
         );
     }
-
 
     private PokemonDTO criarPokemonDosCampos() {
 
@@ -204,38 +440,147 @@ public class MainController {
                 new PokemonDTO();
 
         pokemon.setNome(
-                txtNome.getText()
+                txtNome
+                        .getText()
+                        .trim()
         );
 
         pokemon.setTipo(
-                txtTipo.getText()
+                obterTipo()
         );
 
         pokemon.setNumero(
                 Integer.parseInt(
-                        txtNum.getText()
+                        txtNum
+                                .getText()
+                                .trim()
                 )
         );
 
         pokemon.setGeracao(
-                Integer.parseInt(
-                        txtGeracao.getText()
-                )
+                spGeracao.getValue()
         );
 
         return pokemon;
     }
 
+    private String obterTipo() {
+
+        String tipo =
+                cbTipo
+                        .getEditor()
+                        .getText();
+
+        if (tipo == null) {
+            return "";
+        }
+
+        return tipo.trim();
+    }
 
     private void carregarTabela() {
 
-        tblPokemon.setItems(
-                FXCollections.observableArrayList(
-                        pokemonService.listarPokemons()
-                )
-        );
+        try {
+
+            listaPokemon.setAll(
+                    pokemonService.listarPokemons()
+            );
+
+            aplicarFiltro(
+                    txtPesquisar.getText()
+            );
+
+            atualizarContador();
+
+        } catch (RuntimeException e) {
+
+            mostrarErro(
+                    mensagemDaExcecao(
+                            e,
+                            "Não foi possível carregar os Pokémon."
+                    )
+            );
+        }
     }
 
+    private void aplicarFiltro(
+            String pesquisa
+    ) {
+
+        String busca =
+                pesquisa == null
+                        ? ""
+                        : pesquisa
+                        .trim()
+                        .toLowerCase(
+                                Locale.ROOT
+                        );
+
+        listaFiltrada.setPredicate(
+                pokemon -> {
+
+                    if (busca.isEmpty()) {
+                        return true;
+                    }
+
+                    String nome =
+                            pokemon
+                                    .getNome()
+                                    .toLowerCase(
+                                            Locale.ROOT
+                                    );
+
+                    String tipo =
+                            pokemon
+                                    .getTipo()
+                                    .toLowerCase(
+                                            Locale.ROOT
+                                    );
+
+                    String numero =
+                            String.valueOf(
+                                    pokemon.getNumero()
+                            );
+
+                    String geracao =
+                            String.valueOf(
+                                    pokemon.getGeracao()
+                            );
+
+                    return nome.contains(busca)
+                            || tipo.contains(busca)
+                            || numero.contains(busca)
+                            || geracao.contains(busca);
+                }
+        );
+
+        atualizarContador();
+    }
+
+    private void atualizarContador() {
+
+        int total =
+                listaPokemon.size();
+
+        int exibidos =
+                listaFiltrada.size();
+
+        if (total == exibidos) {
+
+            lblContador.setText(
+                    total + " Pokémon"
+            );
+
+        } else {
+
+            lblContador.setText(
+                    exibidos
+                            + " de "
+                            + total
+                            + " Pokémon"
+            );
+        }
+    }
 
     private void carregarCampos(
             PokemonDTO pokemon
@@ -245,36 +590,146 @@ public class MainController {
                 pokemon.getNome()
         );
 
-        txtTipo.setText(
-                pokemon.getTipo()
-        );
-
         txtNum.setText(
                 String.valueOf(
                         pokemon.getNumero()
                 )
         );
 
-        txtGeracao.setText(
-                String.valueOf(
+        cbTipo.setValue(
+                pokemon.getTipo()
+        );
+
+        spGeracao
+                .getValueFactory()
+                .setValue(
                         pokemon.getGeracao()
-                )
+                );
+    }
+
+    private void configurarModoEdicao(
+            PokemonDTO pokemon
+    ) {
+
+        /*
+         * O número funciona como ID.
+         * Durante a edição ele não pode
+         * ser alterado.
+         */
+        txtNum.setDisable(true);
+
+        btnAdicionar.setDisable(true);
+        btnEditar.setDisable(false);
+        btnExcluir.setDisable(false);
+
+        lblModo.setText(
+                "Editando: "
+                        + pokemon.getNome()
         );
     }
 
+    private void configurarModoCadastro() {
+
+        txtNum.setDisable(false);
+
+        btnAdicionar.setDisable(false);
+        btnEditar.setDisable(true);
+        btnExcluir.setDisable(true);
+
+        lblModo.setText(
+                "Novo cadastro"
+        );
+    }
 
     private void limparCampos() {
-
-        txtNome.clear();
-
-        txtTipo.clear();
-
-        txtNum.clear();
-
-        txtGeracao.clear();
 
         tblPokemon
                 .getSelectionModel()
                 .clearSelection();
+
+        txtNome.clear();
+        txtNum.clear();
+
+        cbTipo
+                .getSelectionModel()
+                .clearSelection();
+
+        cbTipo
+                .getEditor()
+                .clear();
+
+        spGeracao
+                .getValueFactory()
+                .setValue(1);
+
+        configurarModoCadastro();
+
+        Platform.runLater(
+                txtNome::requestFocus
+        );
+    }
+
+    private void mostrarSucesso(
+            String mensagem
+    ) {
+
+        configurarMensagem(
+                mensagem,
+                "status-success"
+        );
+    }
+
+    private void mostrarErro(
+            String mensagem
+    ) {
+
+        configurarMensagem(
+                mensagem,
+                "status-error"
+        );
+    }
+
+    private void mostrarInformacao(
+            String mensagem
+    ) {
+
+        configurarMensagem(
+                mensagem,
+                "status-info"
+        );
+    }
+
+    private void configurarMensagem(
+            String mensagem,
+            String classeCss
+    ) {
+
+        lblMensagem.setText(mensagem);
+
+        lblMensagem
+                .getStyleClass()
+                .removeAll(
+                        "status-success",
+                        "status-error",
+                        "status-info"
+                );
+
+        lblMensagem
+                .getStyleClass()
+                .add(classeCss);
+    }
+
+    private String mensagemDaExcecao(
+            RuntimeException e,
+            String mensagemPadrao
+    ) {
+
+        if (e.getMessage() == null
+                || e.getMessage().isBlank()) {
+
+            return mensagemPadrao;
+        }
+
+        return e.getMessage();
     }
 }

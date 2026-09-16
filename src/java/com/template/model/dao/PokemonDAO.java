@@ -7,59 +7,106 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.util.ArrayList;
 
-import static com.template.util.DialogUtil.showError;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PokemonDAO {
 
-    // CADASTRAR
-    public void cadastrarPokemon(PokemonDTO pokemon) {
+    private static final Logger LOGGER =
+            Logger.getLogger(
+                    PokemonDAO.class.getName()
+            );
+
+    public void cadastrarPokemon(
+            PokemonDTO pokemon
+    ) {
 
         String sql =
-                "INSERT INTO pokemon (nome, tipo, numero, geracao) " +
-                        "VALUES (?, ?, ?, ?)";
+                "INSERT INTO pokemon "
+                        + "(nome, tipo, numero, geracao) "
+                        + "VALUES (?, ?, ?, ?)";
 
         try (
-                Connection conn = new Conexao().conectar();
-                PreparedStatement ps = conn.prepareStatement(sql)
+                Connection conn =
+                        new Conexao().conectar();
+
+                PreparedStatement ps =
+                        conn.prepareStatement(sql)
         ) {
 
-            ps.setString(1, pokemon.getNome());
-            ps.setString(2, pokemon.getTipo());
-            ps.setInt(3, pokemon.getNumero());
-            ps.setInt(4, pokemon.getGeracao());
+            ps.setString(
+                    1,
+                    pokemon.getNome()
+            );
+
+            ps.setString(
+                    2,
+                    pokemon.getTipo()
+            );
+
+            ps.setInt(
+                    3,
+                    pokemon.getNumero()
+            );
+
+            ps.setInt(
+                    4,
+                    pokemon.getGeracao()
+            );
 
             ps.executeUpdate();
 
-            System.out.println(
-                    "Pokemon " + pokemon.getNome()
-                            + " cadastrado com sucesso!"
-            );
-
         } catch (SQLException e) {
 
-            showError(
-                    "Erro ao cadastrar Pokemon: "
-                            + e.getMessage()
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Erro ao cadastrar Pokémon.",
+                    e
+            );
+
+            /*
+             * PostgreSQL:
+             * 23505 = violação de chave única.
+             */
+            if ("23505".equals(
+                    e.getSQLState()
+            )) {
+
+                throw new RuntimeException(
+                        "Já existe um Pokémon com esse número.",
+                        e
+                );
+            }
+
+            throw new RuntimeException(
+                    "Não foi possível cadastrar o Pokémon.",
+                    e
             );
         }
     }
 
-
-    // LISTAR
     public ArrayList<PokemonDTO> listarPokemons() {
 
         String sql =
-                "SELECT * FROM pokemon ORDER BY numero ASC";
+                "SELECT numero, nome, tipo, geracao "
+                        + "FROM pokemon "
+                        + "ORDER BY numero ASC";
 
         ArrayList<PokemonDTO> lista =
                 new ArrayList<>();
 
         try (
-                Connection conn = new Conexao().conectar();
-                PreparedStatement ps = conn.prepareStatement(sql);
-                ResultSet rs = ps.executeQuery()
+                Connection conn =
+                        new Conexao().conectar();
+
+                PreparedStatement ps =
+                        conn.prepareStatement(sql);
+
+                ResultSet rs =
+                        ps.executeQuery()
         ) {
 
             while (rs.next()) {
@@ -86,32 +133,45 @@ public class PokemonDAO {
                 lista.add(pokemon);
             }
 
+            return lista;
+
         } catch (SQLException e) {
 
-            showError(
-                    "Erro ao listar Pokemon: "
-                            + e.getMessage()
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Erro ao listar Pokémon.",
+                    e
+            );
+
+            throw new RuntimeException(
+                    "Não foi possível carregar os Pokémon.",
+                    e
             );
         }
-
-        return lista;
     }
 
-
-    // ALTERAR
     public void alterarPokemon(
             PokemonDTO pokemon,
             int numeroOriginal
     ) {
 
+        /*
+         * O número é o identificador do Pokémon.
+         * Ele não é alterado durante uma edição.
+         */
         String sql =
-                "UPDATE pokemon " +
-                        "SET nome = ?, tipo = ?, numero = ?, geracao = ? " +
-                        "WHERE numero = ?";
+                "UPDATE pokemon "
+                        + "SET nome = ?, "
+                        + "tipo = ?, "
+                        + "geracao = ? "
+                        + "WHERE numero = ?";
 
         try (
-                Connection conn = new Conexao().conectar();
-                PreparedStatement ps = conn.prepareStatement(sql)
+                Connection conn =
+                        new Conexao().conectar();
+
+                PreparedStatement ps =
+                        conn.prepareStatement(sql)
         ) {
 
             ps.setString(
@@ -126,55 +186,53 @@ public class PokemonDAO {
 
             ps.setInt(
                     3,
-                    pokemon.getNumero()
+                    pokemon.getGeracao()
             );
 
             ps.setInt(
                     4,
-                    pokemon.getGeracao()
-            );
-
-            // Número que o Pokemon tinha antes da edição
-            ps.setInt(
-                    5,
                     numeroOriginal
             );
 
             int linhasAfetadas =
                     ps.executeUpdate();
 
-            if (linhasAfetadas > 0) {
+            if (linhasAfetadas == 0) {
 
-                System.out.println(
-                        "Pokemon atualizado com sucesso!"
-                );
-
-            } else {
-
-                System.out.println(
-                        "Pokemon nao encontrado para atualizacao."
+                throw new RuntimeException(
+                        "Pokémon não encontrado para atualização."
                 );
             }
 
         } catch (SQLException e) {
 
-            showError(
-                    "Erro ao alterar Pokemon: "
-                            + e.getMessage()
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Erro ao atualizar Pokémon.",
+                    e
+            );
+
+            throw new RuntimeException(
+                    "Não foi possível atualizar o Pokémon.",
+                    e
             );
         }
     }
 
-
-    // EXCLUIR
-    public void excluirPokemon(int numero) {
+    public void excluirPokemon(
+            int numero
+    ) {
 
         String sql =
-                "DELETE FROM pokemon WHERE numero = ?";
+                "DELETE FROM pokemon "
+                        + "WHERE numero = ?";
 
         try (
-                Connection conn = new Conexao().conectar();
-                PreparedStatement ps = conn.prepareStatement(sql)
+                Connection conn =
+                        new Conexao().conectar();
+
+                PreparedStatement ps =
+                        conn.prepareStatement(sql)
         ) {
 
             ps.setInt(
@@ -185,26 +243,24 @@ public class PokemonDAO {
             int linhasAfetadas =
                     ps.executeUpdate();
 
-            if (linhasAfetadas > 0) {
+            if (linhasAfetadas == 0) {
 
-                System.out.println(
-                        "Pokemon removido com sucesso!"
-                );
-
-            } else {
-
-                System.out.println(
-                        "Pokemon de numero "
-                                + numero
-                                + " nao encontrado."
+                throw new RuntimeException(
+                        "Pokémon não encontrado para exclusão."
                 );
             }
 
         } catch (SQLException e) {
 
-            showError(
-                    "Erro ao excluir Pokemon: "
-                            + e.getMessage()
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Erro ao excluir Pokémon.",
+                    e
+            );
+
+            throw new RuntimeException(
+                    "Não foi possível excluir o Pokémon.",
+                    e
             );
         }
     }

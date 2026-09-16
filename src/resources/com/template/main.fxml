@@ -2,111 +2,276 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
 
-<AnchorPane prefHeight="520.0"
-            prefWidth="760.0"
-            stylesheets="@style.css"
-            xmlns="http://javafx.com/javafx/17.0.12"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.template.controller.MainController">
+<BorderPane
+        prefHeight="620.0"
+        prefWidth="980.0"
+        styleClass="app-root"
+        stylesheets="@style.css"
+        xmlns="http://javafx.com/javafx/17.0.12"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.template.controller.MainController">
 
-    <children>
+    <!-- CABEÇALHO -->
+    <top>
 
-        <!-- TÍTULO -->
-        <Label layoutX="470.0"
-               layoutY="40.0"
-               styleClass="titulo"
-               text="POKÉDEX" />
+        <HBox
+                alignment="CENTER_LEFT"
+                spacing="18.0"
+                styleClass="app-header">
 
-        <!-- FORMULÁRIO -->
-        <Label layoutX="55.0" layoutY="50.0" text="Geração:" />
-        <TextField fx:id="txtGeracao"
-                   layoutX="160.0"
-                   layoutY="45.0"
-                   prefHeight="38.0"
-                   prefWidth="210.0"
-                   promptText="Digite a geração" />
+            <StackPane>
 
-        <Label layoutX="55.0" layoutY="100.0" text="Tipo:" />
-        <TextField fx:id="txtTipo"
-                   layoutX="160.0"
-                   layoutY="95.0"
-                   prefHeight="38.0"
-                   prefWidth="210.0"
-                   promptText="Digite o tipo" />
+                <Circle
+                        radius="25.0"
+                        styleClass="pokedex-lens" />
 
-        <Label layoutX="55.0" layoutY="150.0" text="Número:" />
-        <TextField fx:id="txtNum"
-                   layoutX="160.0"
-                   layoutY="145.0"
-                   prefHeight="38.0"
-                   prefWidth="210.0"
-                   promptText="Digite o número" />
+                <Circle
+                        radius="15.0"
+                        styleClass="pokedex-lens-inner" />
 
-        <Label layoutX="55.0" layoutY="200.0" text="Nome:" />
-        <TextField fx:id="txtNome"
-                   layoutX="160.0"
-                   layoutY="195.0"
-                   prefHeight="38.0"
-                   prefWidth="210.0"
-                   promptText="Digite o nome" />
+            </StackPane>
 
-        <!-- TABELA -->
-        <TableView fx:id="tblPokemon"
-                   layoutX="50.0"
-                   layoutY="275.0"
-                   prefHeight="200.0"
-                   prefWidth="470.0">
+            <VBox spacing="3.0">
 
-            <columns>
-                <TableColumn fx:id="colGeracao"
-                             prefWidth="90.0"
-                             text="Geração" />
+                <Label
+                        styleClass="app-title"
+                        text="POKÉDEX" />
 
-                <TableColumn fx:id="colTipo"
-                             prefWidth="125.0"
-                             text="Tipo" />
+                <Label
+                        styleClass="app-subtitle"
+                        text="Gerenciamento de Pokémon" />
 
-                <TableColumn fx:id="colNum"
-                             prefWidth="90.0"
-                             text="Número" />
+            </VBox>
 
-                <TableColumn fx:id="colNome"
-                             prefWidth="165.0"
-                             text="Nome" />
-            </columns>
-        </TableView>
+        </HBox>
 
-        <!-- BOTÕES -->
-        <Button fx:id="btn_adicionar"
-                layoutX="580.0"
-                layoutY="290.0"
-                mnemonicParsing="false"
-                onAction="#btnAdicionarClick"
-                prefHeight="45.0"
-                prefWidth="130.0"
-                styleClass="button, botao-adicionar"
-                text="Adicionar" />
+    </top>
 
-        <Button fx:id="btn_editar"
-                layoutX="580.0"
-                layoutY="350.0"
-                mnemonicParsing="false"
-                onAction="#btnEditarClick"
-                prefHeight="45.0"
-                prefWidth="130.0"
-                styleClass="button, botao-editar"
-                text="Editar" />
+    <!-- CONTEÚDO -->
+    <center>
 
-        <Button fx:id="btn_excluir"
-                layoutX="580.0"
-                layoutY="410.0"
-                mnemonicParsing="false"
-                onAction="#btnExcluirClick"
-                prefHeight="45.0"
-                prefWidth="130.0"
-                styleClass="button, botao-excluir"
-                text="Excluir" />
+        <HBox
+                alignment="TOP_CENTER"
+                spacing="22.0"
+                styleClass="content-area">
 
-    </children>
-</AnchorPane>
+            <!-- FORMULÁRIO -->
+            <VBox
+                    prefWidth="320.0"
+                    spacing="18.0"
+                    styleClass="card">
+
+                <HBox
+                        alignment="CENTER_LEFT"
+                        spacing="10.0">
+
+                    <Label
+                            styleClass="section-title"
+                            text="Cadastro" />
+
+                    <Region
+                            HBox.hgrow="ALWAYS" />
+
+                    <Label
+                            fx:id="lblModo"
+                            styleClass="mode-badge"
+                            text="Novo cadastro" />
+
+                </HBox>
+
+                <GridPane
+                        hgap="12.0"
+                        vgap="14.0">
+
+                    <Label
+                            GridPane.columnIndex="0"
+                            GridPane.rowIndex="0"
+                            styleClass="field-label"
+                            text="Nome *" />
+
+                    <TextField
+                            fx:id="txtNome"
+                            GridPane.columnIndex="1"
+                            GridPane.rowIndex="0"
+                            maxWidth="1.7976931348623157E308"
+                            promptText="Ex: Pikachu" />
+
+                    <Label
+                            GridPane.columnIndex="0"
+                            GridPane.rowIndex="1"
+                            styleClass="field-label"
+                            text="Tipo *" />
+
+                    <ComboBox
+                            fx:id="cbTipo"
+                            GridPane.columnIndex="1"
+                            GridPane.rowIndex="1"
+                            editable="true"
+                            maxWidth="1.7976931348623157E308"
+                            promptText="Selecione o tipo" />
+
+                    <Label
+                            GridPane.columnIndex="0"
+                            GridPane.rowIndex="2"
+                            styleClass="field-label"
+                            text="Número *" />
+
+                    <TextField
+                            fx:id="txtNum"
+                            GridPane.columnIndex="1"
+                            GridPane.rowIndex="2"
+                            maxWidth="1.7976931348623157E308"
+                            promptText="Ex: 25" />
+
+                    <Label
+                            GridPane.columnIndex="0"
+                            GridPane.rowIndex="3"
+                            styleClass="field-label"
+                            text="Geração *" />
+
+                    <Spinner
+                            fx:id="spGeracao"
+                            GridPane.columnIndex="1"
+                            GridPane.rowIndex="3"
+                            maxWidth="1.7976931348623157E308" />
+
+                </GridPane>
+
+                <Label
+                        styleClass="required-hint"
+                        text="* Campos obrigatórios" />
+
+                <HBox spacing="10.0">
+
+                    <Button
+                            fx:id="btnAdicionar"
+                            defaultButton="true"
+                            HBox.hgrow="ALWAYS"
+                            maxWidth="1.7976931348623157E308"
+                            onAction="#btnAdicionarClick"
+                            styleClass="action-button, primary-button"
+                            text="＋ Adicionar" />
+
+                    <Button
+                            fx:id="btnLimpar"
+                            HBox.hgrow="ALWAYS"
+                            maxWidth="1.7976931348623157E308"
+                            onAction="#btnLimparClick"
+                            styleClass="action-button, secondary-button"
+                            text="↻ Limpar" />
+
+                </HBox>
+
+            </VBox>
+
+            <!-- TABELA -->
+            <VBox
+                    HBox.hgrow="ALWAYS"
+                    prefWidth="550.0"
+                    spacing="14.0"
+                    styleClass="card">
+
+                <HBox
+                        alignment="CENTER_LEFT">
+
+                    <Label
+                            styleClass="section-title"
+                            text="Pokémon cadastrados" />
+
+                    <Region
+                            HBox.hgrow="ALWAYS" />
+
+                    <Label
+                            fx:id="lblContador"
+                            styleClass="count-badge"
+                            text="0 Pokémon" />
+
+                </HBox>
+
+                <TextField
+                        fx:id="txtPesquisar"
+                        promptText="🔎 Pesquisar por nome, tipo, número ou geração..."
+                        styleClass="search-field" />
+
+                <TableView
+                        fx:id="tblPokemon"
+                        VBox.vgrow="ALWAYS"
+                        prefHeight="360.0">
+
+                    <columns>
+
+                        <TableColumn
+                                fx:id="colNum"
+                                prefWidth="85.0"
+                                sortable="true"
+                                text="Número" />
+
+                        <TableColumn
+                                fx:id="colNome"
+                                prefWidth="155.0"
+                                sortable="true"
+                                text="Nome" />
+
+                        <TableColumn
+                                fx:id="colTipo"
+                                prefWidth="175.0"
+                                sortable="true"
+                                text="Tipo" />
+
+                        <TableColumn
+                                fx:id="colGeracao"
+                                prefWidth="95.0"
+                                sortable="true"
+                                text="Geração" />
+
+                    </columns>
+
+                </TableView>
+
+                <HBox
+                        alignment="CENTER_RIGHT"
+                        spacing="10.0">
+
+                    <Button
+                            fx:id="btnEditar"
+                            disable="true"
+                            onAction="#btnEditarClick"
+                            prefWidth="125.0"
+                            styleClass="action-button, edit-button"
+                            text="✎ Editar" />
+
+                    <Button
+                            fx:id="btnExcluir"
+                            disable="true"
+                            onAction="#btnExcluirClick"
+                            prefWidth="125.0"
+                            styleClass="action-button, delete-button"
+                            text="✕ Excluir" />
+
+                </HBox>
+
+            </VBox>
+
+        </HBox>
+
+    </center>
+
+    <!-- MENSAGENS -->
+    <bottom>
+
+        <HBox
+                alignment="CENTER_LEFT"
+                styleClass="status-bar">
+
+            <Label
+                    fx:id="lblMensagem"
+                    styleClass="status-message, status-info"
+                    text="Sistema pronto." />
+
+        </HBox>
+
+    </bottom>
+
+</BorderPane>

@@ -1,60 +1,255 @@
 /* =========================
-   TELA PRINCIPAL
+   TELA
    ========================= */
 
-.root {
-    -fx-background-color: linear-gradient(
-            to bottom right,
-            #1f2937,
-            #111827
-    );
+.app-root {
+    -fx-background-color:
+            linear-gradient(
+                    to bottom right,
+                    #111827,
+                    #172033
+            );
 
     -fx-font-family: "Segoe UI";
 }
 
 
 /* =========================
-   LABELS
+   CABEÇALHO
    ========================= */
 
-.label {
-    -fx-text-fill: #f9fafb;
-    -fx-font-size: 14px;
+.app-header {
+    -fx-background-color:
+            linear-gradient(
+                    to right,
+                    #b91c1c,
+                    #dc2626
+            );
+
+    -fx-padding: 18px 28px;
+
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(0, 0, 0, 0.30),
+                    12,
+                    0,
+                    0,
+                    3
+            );
+}
+
+
+.app-title {
+    -fx-text-fill: #ffffff;
+
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+
+.app-subtitle {
+    -fx-text-fill: #fee2e2;
+
+    -fx-font-size: 13px;
+}
+
+
+.pokedex-lens {
+    -fx-fill: #e0f2fe;
+
+    -fx-stroke: #ffffff;
+    -fx-stroke-width: 4px;
+
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(0, 0, 0, 0.35),
+                    6,
+                    0,
+                    0,
+                    2
+            );
+}
+
+
+.pokedex-lens-inner {
+    -fx-fill: #38bdf8;
+
+    -fx-stroke: #0ea5e9;
+    -fx-stroke-width: 2px;
+}
+
+
+/* =========================
+   ÁREA PRINCIPAL
+   ========================= */
+
+.content-area {
+    -fx-padding: 25px;
+}
+
+
+/* =========================
+   CARDS
+   ========================= */
+
+.card {
+    -fx-background-color: #1f2937;
+
+    -fx-background-radius: 16px;
+    -fx-border-radius: 16px;
+
+    -fx-border-color: #374151;
+    -fx-border-width: 1px;
+
+    -fx-padding: 20px;
+
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(0, 0, 0, 0.25),
+                    12,
+                    0,
+                    0,
+                    4
+            );
+}
+
+
+.section-title {
+    -fx-text-fill: #facc15;
+
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+
+.field-label {
+    -fx-text-fill: #e5e7eb;
+
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+
+.required-hint {
+    -fx-text-fill: #9ca3af;
+
+    -fx-font-size: 11px;
+}
+
+
+.mode-badge {
+    -fx-background-color: #374151;
+
+    -fx-background-radius: 20px;
+
+    -fx-padding: 5px 10px;
+
+    -fx-text-fill: #facc15;
+
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+
+.count-badge {
+    -fx-background-color: #374151;
+
+    -fx-background-radius: 20px;
+
+    -fx-padding: 5px 12px;
+
+    -fx-text-fill: #facc15;
+
+    -fx-font-size: 12px;
     -fx-font-weight: bold;
 }
 
 
 /* =========================
-   CAMPOS DE TEXTO
+   CAMPOS
    ========================= */
 
-.text-field {
+.text-field,
+.combo-box,
+.spinner {
     -fx-background-color: #ffffff;
 
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
+    -fx-background-radius: 9px;
+    -fx-border-radius: 9px;
 
     -fx-border-color: #d1d5db;
     -fx-border-width: 1px;
 
-    -fx-padding: 8px 10px;
-
     -fx-font-size: 13px;
-    -fx-text-fill: #111827;
 }
 
-.text-field:focused {
+
+.text-field {
+    -fx-padding: 9px 11px;
+
+    -fx-text-fill: #111827;
+
+    -fx-prompt-text-fill: #9ca3af;
+}
+
+
+.text-field:focused,
+.combo-box:focused,
+.spinner:focused {
     -fx-border-color: #facc15;
     -fx-border-width: 2px;
 
-    -fx-effect: dropshadow(
-            gaussian,
-            rgba(250, 204, 21, 0.25),
-            8,
-            0,
-            0,
-            0
-    );
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(250, 204, 21, 0.25),
+                    8,
+                    0,
+                    0,
+                    0
+            );
+}
+
+
+.text-field:disabled {
+    -fx-opacity: 0.75;
+
+    -fx-background-color: #e5e7eb;
+
+    -fx-text-fill: #374151;
+}
+
+
+.combo-box .list-cell {
+    -fx-text-fill: #111827;
+}
+
+
+.combo-box-popup .list-view {
+    -fx-background-color: #ffffff;
+}
+
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #fef3c7;
+}
+
+
+.spinner .text-field {
+    -fx-background-radius: 9px 0 0 9px;
+}
+
+
+.search-field {
+    -fx-background-radius: 18px;
+    -fx-border-radius: 18px;
+
+    -fx-padding: 10px 15px;
+
+    -fx-font-size: 13px;
 }
 
 
@@ -62,66 +257,86 @@
    BOTÕES
    ========================= */
 
-.button {
+.action-button {
     -fx-cursor: hand;
+
+    -fx-text-fill: #ffffff;
 
     -fx-font-size: 13px;
     -fx-font-weight: bold;
 
-    -fx-text-fill: white;
+    -fx-background-radius: 9px;
 
-    -fx-background-radius: 8px;
+    -fx-padding: 10px 16px;
 
-    -fx-padding: 9px 18px;
-
-    -fx-effect: dropshadow(
-            gaussian,
-            rgba(0, 0, 0, 0.25),
-            5,
-            0,
-            0,
-            2
-    );
+    -fx-effect:
+            dropshadow(
+                    gaussian,
+                    rgba(0, 0, 0, 0.25),
+                    5,
+                    0,
+                    0,
+                    2
+            );
 }
 
 
-/* ADICIONAR */
+.action-button:hover {
+    -fx-translate-y: -1px;
+}
 
-.botao-adicionar {
+
+.action-button:pressed {
+    -fx-translate-y: 1px;
+}
+
+
+.action-button:disabled {
+    -fx-opacity: 0.40;
+
+    -fx-cursor: default;
+
+    -fx-effect: none;
+}
+
+
+.primary-button {
     -fx-background-color: #16a34a;
 }
 
-.botao-adicionar:hover {
+
+.primary-button:hover {
     -fx-background-color: #22c55e;
 }
 
 
-/* EDITAR */
+.secondary-button {
+    -fx-background-color: #475569;
+}
 
-.botao-editar {
+
+.secondary-button:hover {
+    -fx-background-color: #64748b;
+}
+
+
+.edit-button {
     -fx-background-color: #2563eb;
 }
 
-.botao-editar:hover {
+
+.edit-button:hover {
     -fx-background-color: #3b82f6;
 }
 
 
-/* EXCLUIR */
-
-.botao-excluir {
+.delete-button {
     -fx-background-color: #dc2626;
 }
 
-.botao-excluir:hover {
+
+.delete-button:hover {
     -fx-background-color: #ef4444;
-}
-
-
-/* Botão pressionado */
-
-.button:pressed {
-    -fx-translate-y: 2px;
 }
 
 
@@ -132,72 +347,113 @@
 .table-view {
     -fx-background-color: transparent;
 
-    -fx-border-color: #374151;
-    -fx-border-radius: 10px;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
 
-    -fx-background-radius: 10px;
+    -fx-border-color: #4b5563;
+    -fx-border-width: 1px;
 }
 
-
-/* Cabeçalho */
 
 .table-view .column-header-background {
     -fx-background-color: #dc2626;
 
-    -fx-background-radius: 10px 10px 0 0;
+    -fx-background-radius: 11px 11px 0 0;
 }
+
 
 .table-view .column-header {
     -fx-background-color: transparent;
+
+    -fx-size: 38px;
 }
 
+
 .table-view .column-header .label {
-    -fx-text-fill: white;
+    -fx-text-fill: #ffffff;
+
+    -fx-font-size: 12px;
     -fx-font-weight: bold;
+
     -fx-alignment: CENTER;
 }
 
 
-/* Linhas */
-
 .table-row-cell {
     -fx-background-color: #ffffff;
-    -fx-border-color: transparent transparent #e5e7eb transparent;
+
+    -fx-border-color:
+            transparent
+            transparent
+            #e5e7eb
+            transparent;
+
+    -fx-cell-size: 36px;
 }
+
 
 .table-row-cell:odd {
     -fx-background-color: #f3f4f6;
 }
 
+
 .table-row-cell:hover {
     -fx-background-color: #fef3c7;
 }
 
+
 .table-row-cell:selected {
     -fx-background-color: #fde047;
 }
+
 
 .table-row-cell:selected .text {
     -fx-fill: #111827;
 }
 
 
+.table-cell {
+    -fx-text-fill: #111827;
+
+    -fx-alignment: CENTER_LEFT;
+
+    -fx-padding: 0 8px;
+}
+
+
 /* =========================
-   TÍTULO
+   BARRA DE STATUS
    ========================= */
 
-.titulo {
-    -fx-font-size: 26px;
+.status-bar {
+    -fx-background-color: #0f172a;
+
+    -fx-border-color:
+            #374151
+            transparent
+            transparent
+            transparent;
+
+    -fx-padding: 11px 28px;
+}
+
+
+.status-message {
+    -fx-font-size: 12px;
     -fx-font-weight: bold;
+}
 
-    -fx-text-fill: #facc15;
 
-    -fx-effect: dropshadow(
-            gaussian,
-            rgba(0, 0, 0, 0.5),
-            4,
-            0,
-            0,
-            2
-    );
+.status-success {
+    -fx-text-fill: #4ade80;
+}
+
+
+.status-error {
+    -fx-text-fill: #f87171;
+}
+
+
+.status-info {
+    -fx-text-fill: #93c5fd;
 }

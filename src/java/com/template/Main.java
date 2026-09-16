@@ -56,26 +56,24 @@ public class Main extends Application {
                 }
         );
 
-
         Scene scene =
                 new Scene(
                         loader.load(),
-                        600,
-                        400
+                        980,
+                        620
                 );
 
-        stage.setTitle(
-                "PokémonNovo"
-        );
+        stage.setTitle("PokémonNovo");
+
+        stage.setMinWidth(900);
+        stage.setMinHeight(560);
 
         stage.setScene(scene);
-
+        stage.centerOnScreen();
         stage.show();
     }
 
-
     public static void main(String[] args) {
-
         launch();
     }
 }
