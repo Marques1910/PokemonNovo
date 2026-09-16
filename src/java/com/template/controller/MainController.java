@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import service.IPokemonService;
 import validator.IPokemonValidador;
 
 import static com.template.util.DialogUtil.showError;
@@ -56,7 +57,6 @@ public class MainController {
 
     @FXML
     private TableColumn<PokemonDTO, String> colNome;
-
 
     @FXML
     private void initialize() {

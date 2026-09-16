@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import service.IPokemonService;
 import service.PokemonService;
 
 import validator.IPokemonValidador;
