@@ -7,7 +7,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import service.IPokemonService;
 import service.PokemonService;
 
 import validator.IPokemonValidador;
@@ -18,15 +17,11 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        /*
-         * Criamos as implementações concretas.
-         */
         IPokemonService pokemonService =
                 new PokemonService();
 
         IPokemonValidador pokemonValidador =
                 new PokemonValidador();
-
 
         FXMLLoader loader =
                 new FXMLLoader(
@@ -35,12 +30,6 @@ public class Main extends Application {
                         )
                 );
 
-
-        /*
-         * Quando o FXMLLoader precisar criar
-         * o MainController, fornecemos as
-         * dependências pelo construtor.
-         */
         loader.setControllerFactory(
                 controllerClass -> {
 
