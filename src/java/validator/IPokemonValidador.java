@@ -1,5 +1,11 @@
 package validator;
 
 public interface IPokemonValidador {
-    boolean validarPokemon(String txtGeracao, String txtTipo, String txtNome, String txtNum);
+
+    boolean validarPokemon(
+            String nome,
+            String tipo,
+            String numero,
+            String geracao
+    );
 }

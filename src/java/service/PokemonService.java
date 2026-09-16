@@ -2,33 +2,34 @@ package service;
 
 import com.template.model.dao.PokemonDAO;
 import com.template.model.dto.PokemonDTO;
-import javafx.collections.FXCollections;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import java.util.ArrayList;
 
-public class PokemonService{
+import java.util.List;
 
-    public ArrayList<PokemonDTO> listarPokemons() {
-        PokemonDAO objPokemonDAO = new PokemonDAO();
-        return objPokemonDAO.listarPokemons();
+public class PokemonService implements IPokemonService {
+
+    private final PokemonDAO pokemonDAO;
+
+    public PokemonService() {
+        this.pokemonDAO = new PokemonDAO();
     }
 
-    public void limparCampos(TextField txtNome, TextField txtTipo, TextField txtNum, TextField txtGeracao) {
-        txtNome.clear();
-        txtTipo.clear();
-        txtNum.clear();
-        txtGeracao.clear();
+    @Override
+    public void cadastrarPokemon(PokemonDTO pokemon) {
+        pokemonDAO.cadastrarPokemon(pokemon);
     }
 
-
-
-    public void carregarPokemon(TableView<PokemonDTO> tblPokemon)
-    {
-        PokemonDAO objPokemonDAO = new PokemonDAO();
-
-        ArrayList<PokemonDTO> listaPokemon = objPokemonDAO.listarPokemons();
-        tblPokemon.setItems(FXCollections.observableArrayList(listaPokemon));
+    @Override
+    public List<PokemonDTO> listarPokemons() {
+        return pokemonDAO.listarPokemons();
     }
 
+    @Override
+    public void alterarPokemon(PokemonDTO pokemon, int numeroOriginal) {
+        pokemonDAO.alterarPokemon(pokemon, numeroOriginal);
+    }
+
+    @Override
+    public void excluirPokemon(int numero) {
+        pokemonDAO.excluirPokemon(numero);
+    }
 }

@@ -3,48 +3,110 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.template.controller.MainController">
+<AnchorPane prefHeight="520.0"
+            prefWidth="760.0"
+            stylesheets="@style.css"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.template.controller.MainController">
 
     <children>
 
-        <Button fx:id="btn_adicionar" layoutX="444.0" layoutY="177.0" mnemonicParsing="false" onAction="#btnAdicionarClick" text="Adicionar" />
+        <!-- TÍTULO -->
+        <Label layoutX="470.0"
+               layoutY="40.0"
+               styleClass="titulo"
+               text="POKÉDEX" />
 
-        <Label layoutX="70.0" layoutY="116.0" text="Nome:" />
+        <!-- FORMULÁRIO -->
+        <Label layoutX="55.0" layoutY="50.0" text="Geração:" />
+        <TextField fx:id="txtGeracao"
+                   layoutX="160.0"
+                   layoutY="45.0"
+                   prefHeight="38.0"
+                   prefWidth="210.0"
+                   promptText="Digite a geração" />
 
-        <TableView fx:id="tblPokemon" layoutX="54.0" layoutY="173.0" prefHeight="200.0" prefWidth="297.0">
+        <Label layoutX="55.0" layoutY="100.0" text="Tipo:" />
+        <TextField fx:id="txtTipo"
+                   layoutX="160.0"
+                   layoutY="95.0"
+                   prefHeight="38.0"
+                   prefWidth="210.0"
+                   promptText="Digite o tipo" />
+
+        <Label layoutX="55.0" layoutY="150.0" text="Número:" />
+        <TextField fx:id="txtNum"
+                   layoutX="160.0"
+                   layoutY="145.0"
+                   prefHeight="38.0"
+                   prefWidth="210.0"
+                   promptText="Digite o número" />
+
+        <Label layoutX="55.0" layoutY="200.0" text="Nome:" />
+        <TextField fx:id="txtNome"
+                   layoutX="160.0"
+                   layoutY="195.0"
+                   prefHeight="38.0"
+                   prefWidth="210.0"
+                   promptText="Digite o nome" />
+
+        <!-- TABELA -->
+        <TableView fx:id="tblPokemon"
+                   layoutX="50.0"
+                   layoutY="275.0"
+                   prefHeight="200.0"
+                   prefWidth="470.0">
 
             <columns>
+                <TableColumn fx:id="colGeracao"
+                             prefWidth="90.0"
+                             text="Geração" />
 
-                <TableColumn fx:id="colGeracao" prefWidth="75.0" text="Geração" />
+                <TableColumn fx:id="colTipo"
+                             prefWidth="125.0"
+                             text="Tipo" />
 
-                <TableColumn fx:id="colTipo" prefWidth="75.0" text="Tipo" />
+                <TableColumn fx:id="colNum"
+                             prefWidth="90.0"
+                             text="Número" />
 
-                <TableColumn fx:id="colNum" prefWidth="75.0" text="Número" />
-
-                <TableColumn fx:id="colNome" prefWidth="75.0" text="Nome" />
-
+                <TableColumn fx:id="colNome"
+                             prefWidth="165.0"
+                             text="Nome" />
             </columns>
-
         </TableView>
 
-        <TextField fx:id="txtNome" layoutX="128.0" layoutY="112.0" />
+        <!-- BOTÕES -->
+        <Button fx:id="btn_adicionar"
+                layoutX="580.0"
+                layoutY="290.0"
+                mnemonicParsing="false"
+                onAction="#btnAdicionarClick"
+                prefHeight="45.0"
+                prefWidth="130.0"
+                styleClass="button, botao-adicionar"
+                text="Adicionar" />
 
-        <Button fx:id="btn_excluir" layoutX="444.0" layoutY="248.0" mnemonicParsing="false" onAction="#btnExcluirClick" text="Excluir" />
+        <Button fx:id="btn_editar"
+                layoutX="580.0"
+                layoutY="350.0"
+                mnemonicParsing="false"
+                onAction="#btnEditarClick"
+                prefHeight="45.0"
+                prefWidth="130.0"
+                styleClass="button, botao-editar"
+                text="Editar" />
 
-        <Button fx:id="btn_editar" layoutX="444.0" layoutY="210.0" mnemonicParsing="false" onAction="#btnEditarClick" text="Editar" />
-
-        <Label layoutX="71.0" layoutY="31.0" text="Geração" />
-
-        <Label layoutX="70.0" layoutY="59.0" text="Tpo:" />
-
-        <Label layoutX="70.0" layoutY="86.0" text="Número:" />
-
-        <TextField fx:id="txtNum" layoutX="128.0" layoutY="82.0" />
-
-        <TextField fx:id="txtTipo" layoutX="128.0" layoutY="55.0" />
-
-        <TextField fx:id="txtGeracao" layoutX="128.0" layoutY="27.0" />
+        <Button fx:id="btn_excluir"
+                layoutX="580.0"
+                layoutY="410.0"
+                mnemonicParsing="false"
+                onAction="#btnExcluirClick"
+                prefHeight="45.0"
+                prefWidth="130.0"
+                styleClass="button, botao-excluir"
+                text="Excluir" />
 
     </children>
-
 </AnchorPane>

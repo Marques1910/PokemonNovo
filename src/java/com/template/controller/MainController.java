@@ -1,153 +1,281 @@
 package com.template.controller;
 
-import com.template.model.dao.PokemonDAO;
 import com.template.model.dto.PokemonDTO;
+
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
-import service.PokemonService;
+
+import service.IPokemonService;
 import validator.IPokemonValidador;
-import validator.PokemonValidador; // Import do validador adicionado
 
-import java.util.ArrayList;
+import static com.template.util.DialogUtil.showError;
 
-public class MainController
-{
-    private final IPokemonValidador PokemonValidador;
+public class MainController {
 
-    public MainController(IPokemonValidador PokemonValidador){
-        this.PokemonValidador = PokemonValidador;
-    }
+    private final IPokemonService pokemonService;
 
-    @FXML private Button btn_adicionar;
-    @FXML private Button btn_editar;
-    @FXML private Button btn_excluir;
-    @FXML private Button btn_pesquisar;
-    @FXML private TextField txtNome;
-    @FXML private TextField txtTipo;
-    @FXML private TextField txtNum;
-    @FXML private TextField txtGeracao;
-    @FXML private TableView<PokemonDTO> tblPokemon;
+    private final IPokemonValidador pokemonValidador;
 
-    private PokemonService pokemonService = new PokemonService();
+    public MainController(
+            IPokemonService pokemonService,
+            IPokemonValidador pokemonValidador
+    ) {
 
-    @FXML private TableColumn<PokemonDTO, Integer> colGeracao;
-    @FXML private TableColumn<PokemonDTO, String> colTipo;
-    @FXML private TableColumn<PokemonDTO, Integer> colNum;
-    @FXML private TableColumn<PokemonDTO, String> colNome;
-
-    @FXML
-    private void btnAdicionarClick() {
-        if (!PokemonValidador.validarPokemon(txtNome.getText(), txtTipo.getText(), txtNum.getText(), txtGeracao.getText())) {
-            return;
-        }
-        String nome = txtNome.getText();
-        String tipo = txtTipo.getText();
-        String numeroStr = txtNum.getText();
-        String geracaoStr = txtGeracao.getText();
-
-        PokemonValidador validador = new PokemonValidador();
-        if (!validador.validarPokemon(nome, tipo, numeroStr, geracaoStr)){
-            return;
-        }
-
-        int numero = Integer.parseInt(numeroStr);
-        int geracao = Integer.parseInt(geracaoStr);
-
-        PokemonDTO novoPokemon = new PokemonDTO();
-        novoPokemon.setNome(nome);
-        novoPokemon.setTipo(tipo);
-        novoPokemon.setNumero(numero);
-        novoPokemon.setGeracao(geracao);
-
-        PokemonDAO objPokemonDAO = new PokemonDAO();
-        objPokemonDAO.cadastrarPokemon(novoPokemon);
-
-        pokemonService.limparCampos(txtNome, txtTipo, txtNum, txtGeracao);
-        carregarCampos(tblPokemon, txtNome, txtTipo, txtNum, txtGeracao);
+        this.pokemonService = pokemonService;
+        this.pokemonValidador = pokemonValidador;
     }
 
     @FXML
-    private void btnEditarClick() {
-
-        PokemonDTO pokemonSelecionado = tblPokemon.getSelectionModel().getSelectedItem();
-
-        if (pokemonSelecionado != null) {
-            String nome = txtNome.getText();
-            String tipo = txtTipo.getText();
-            String numeroStr = txtNum.getText();
-            String geracaoStr = txtGeracao.getText();
-
-            // Aplica a validação também na edição
-            PokemonValidador validador = new PokemonValidador();
-            if (!validador.validarPokemon(txtNome.getText(), txtTipo.getText(), txtNum.getText(), txtGeracao.getText())){
-                return; // Se retornar falso, interrompe o processo aqui
-            }
-
-            try {
-                pokemonSelecionado.setNome(nome);
-                pokemonSelecionado.setTipo(tipo);
-                pokemonSelecionado.setNumero(Integer.parseInt(numeroStr)); // Bug corrigido
-                pokemonSelecionado.setGeracao(Integer.parseInt(geracaoStr));
-
-                PokemonDAO objPokemonDAO = new PokemonDAO();
-                objPokemonDAO.alterarPokemon(pokemonSelecionado);
-
-                pokemonService.limparCampos(txtNome, txtTipo, txtNum, txtGeracao);
-                pokemonService.carregarPokemon(tblPokemon);
-                System.out.println("Pokémon editado com sucesso!");
-
-            } catch (NumberFormatException e) {
-                System.err.println("Erro: Verifique se os campos numéricos estão corretos.");
-            }
-        } else {
-            System.out.println("Por favor, selecione um Pokémon na tabela para editar.");
-        }
-    }
+    private TextField txtNome;
 
     @FXML
-    private void btnExcluirClick() {
+    private TextField txtTipo;
 
-        PokemonDTO pokemonSelecionado = tblPokemon.getSelectionModel().getSelectedItem();
+    @FXML
+    private TextField txtNum;
 
-        if (pokemonSelecionado != null) {
+    @FXML
+    private TextField txtGeracao;
 
-            PokemonDAO objPokemonDAO = new PokemonDAO();
-            objPokemonDAO.excluirPokemon(pokemonSelecionado.getNumero());
+    @FXML
+    private TableView<PokemonDTO> tblPokemon;
 
-            pokemonService.limparCampos(txtNome, txtTipo, txtNum, txtGeracao);
-            pokemonService.carregarPokemon(tblPokemon);
-        } else {
-            System.out.println("Por favor, selecione um Pokémon na tabela para excluir.");
-        }
-    }
+    @FXML
+    private TableColumn<PokemonDTO, Integer> colGeracao;
+
+    @FXML
+    private TableColumn<PokemonDTO, String> colTipo;
+
+    @FXML
+    private TableColumn<PokemonDTO, Integer> colNum;
+
+    @FXML
+    private TableColumn<PokemonDTO, String> colNome;
 
 
     @FXML
     private void initialize() {
-        colGeracao.setCellValueFactory(new PropertyValueFactory<>("geracao"));
-        colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
-        colNum.setCellValueFactory(new PropertyValueFactory<>("numero"));
-        colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
 
+        colGeracao.setCellValueFactory(
+                new PropertyValueFactory<>("geracao")
+        );
 
-        pokemonService.carregarPokemon(tblPokemon);
+        colTipo.setCellValueFactory(
+                new PropertyValueFactory<>("tipo")
+        );
+
+        colNum.setCellValueFactory(
+                new PropertyValueFactory<>("numero")
+        );
+
+        colNome.setCellValueFactory(
+                new PropertyValueFactory<>("nome")
+        );
+
+        /*
+         * Quando o usuário seleciona um Pokémon,
+         * os campos são preenchidos.
+         */
+        tblPokemon
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener(
+                        (observable, anterior, selecionado) -> {
+
+                            if (selecionado != null) {
+                                carregarCampos(selecionado);
+                            }
+                        }
+                );
+
+        carregarTabela();
     }
 
-    @FXML
-    public void carregarCampos(TableView<PokemonDTO> tblPokemon, TextField txtNome, TextField txtTipo, TextField txtNum, TextField txtGeracao) {
-        PokemonDTO objPokemonDTO = tblPokemon.getSelectionModel().getSelectedItem();
 
-        if (objPokemonDTO != null) {
-            txtGeracao.setText(String.valueOf(objPokemonDTO.getGeracao()));
-            txtTipo.setText(objPokemonDTO.getTipo());
-            txtNum.setText(String.valueOf(objPokemonDTO.getNumero()));
-            txtNome.setText(objPokemonDTO.getNome());
+    @FXML
+    private void btnAdicionarClick() {
+
+        if (!validarCampos()) {
+            return;
         }
+
+        PokemonDTO pokemon =
+                criarPokemonDosCampos();
+
+        pokemonService.cadastrarPokemon(
+                pokemon
+        );
+
+        limparCampos();
+
+        carregarTabela();
+    }
+
+
+    @FXML
+    private void btnEditarClick() {
+
+        PokemonDTO pokemonSelecionado =
+                tblPokemon
+                        .getSelectionModel()
+                        .getSelectedItem();
+
+        if (pokemonSelecionado == null) {
+
+            showError(
+                    "Selecione um Pokémon na tabela para editar."
+            );
+
+            return;
+        }
+
+        if (!validarCampos()) {
+            return;
+        }
+
+        /*
+         * Precisamos guardar o número antigo,
+         * pois o usuário também pode alterar
+         * o número do Pokémon.
+         */
+        int numeroOriginal =
+                pokemonSelecionado.getNumero();
+
+        PokemonDTO pokemonEditado =
+                criarPokemonDosCampos();
+
+        pokemonService.alterarPokemon(
+                pokemonEditado,
+                numeroOriginal
+        );
+
+        limparCampos();
+
+        carregarTabela();
+    }
+
+
+    @FXML
+    private void btnExcluirClick() {
+
+        PokemonDTO pokemonSelecionado =
+                tblPokemon
+                        .getSelectionModel()
+                        .getSelectedItem();
+
+        if (pokemonSelecionado == null) {
+
+            showError(
+                    "Selecione um Pokémon na tabela para excluir."
+            );
+
+            return;
+        }
+
+        pokemonService.excluirPokemon(
+                pokemonSelecionado.getNumero()
+        );
+
+        limparCampos();
+
+        carregarTabela();
+    }
+
+
+    private boolean validarCampos() {
+
+        return pokemonValidador.validarPokemon(
+                txtNome.getText(),
+                txtTipo.getText(),
+                txtNum.getText(),
+                txtGeracao.getText()
+        );
+    }
+
+
+    private PokemonDTO criarPokemonDosCampos() {
+
+        PokemonDTO pokemon =
+                new PokemonDTO();
+
+        pokemon.setNome(
+                txtNome.getText()
+        );
+
+        pokemon.setTipo(
+                txtTipo.getText()
+        );
+
+        pokemon.setNumero(
+                Integer.parseInt(
+                        txtNum.getText()
+                )
+        );
+
+        pokemon.setGeracao(
+                Integer.parseInt(
+                        txtGeracao.getText()
+                )
+        );
+
+        return pokemon;
+    }
+
+
+    private void carregarTabela() {
+
+        tblPokemon.setItems(
+                FXCollections.observableArrayList(
+                        pokemonService.listarPokemons()
+                )
+        );
+    }
+
+
+    private void carregarCampos(
+            PokemonDTO pokemon
+    ) {
+
+        txtNome.setText(
+                pokemon.getNome()
+        );
+
+        txtTipo.setText(
+                pokemon.getTipo()
+        );
+
+        txtNum.setText(
+                String.valueOf(
+                        pokemon.getNumero()
+                )
+        );
+
+        txtGeracao.setText(
+                String.valueOf(
+                        pokemon.getGeracao()
+                )
+        );
+    }
+
+
+    private void limparCampos() {
+
+        txtNome.clear();
+
+        txtTipo.clear();
+
+        txtNum.clear();
+
+        txtGeracao.clear();
+
+        tblPokemon
+                .getSelectionModel()
+                .clearSelection();
     }
 }
